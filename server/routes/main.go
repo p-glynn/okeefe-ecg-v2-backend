@@ -8,7 +8,7 @@ var router = gin.Default()
 
 func Run() {
 	getRoutes()
-	router.Run(":8080")
+	router.Run()
 }
 
 func getRoutes() {
