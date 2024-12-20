@@ -1,8 +1,8 @@
-package main
+package server
 
 import (
 	"fmt"
-	"server/routes"
+	"routes"
 )
 
 func main() {
