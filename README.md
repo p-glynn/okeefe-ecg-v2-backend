@@ -6,13 +6,13 @@ To use this database setup:
 
 First, make sure you have PostgreSQL installed and running locally
 
-1. Create a new database named ecg_db:
+- Create a new database named ecg_db:
 
 ```bash
 createdb ecg_db
 ```
 
-1. Run the migration:
+- Run the migration:
 
 ```bash
 psql -d ecg_db -f db/migrations/001_initial_schema.sql
