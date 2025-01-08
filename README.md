@@ -44,4 +44,4 @@ To roll back the last migration:
 migrate -path db/migrations -database "postgresql://username:password@localhost:5432/dbname?sslmode=disable" down 1
 ```
 
-Note: Replace `username`, `password`, `localhost`, `5432`, and `dbname` with your actual database connection details.
+Note: Replace `username`, `password`, `localhost`, `5432`, and `dbname` with your actual database connection details (`.env`)
