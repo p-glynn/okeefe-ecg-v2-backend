@@ -1,25 +1,20 @@
 -- +goose Up
 
--- drop tables if they exist
-DROP TABLE IF EXISTS comments;
-DROP TABLE IF EXISTS tests;
-DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS verification_token;
-DROP TABLE IF EXISTS accounts;
-DROP TABLE IF EXISTS sessions;
-
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
-    "emailVerified" TIMESTAMPTZ,
     password_hash VARCHAR(255),
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     name VARCHAR(255),
+    "emailVerified" TIMESTAMPTZ,
     image TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO users VALUES
+    (1, 'bob@test.com', '123', 'Bob', 'Saget', 'Bob Saget');
 
 CREATE TABLE tests (
     id SERIAL PRIMARY KEY,
@@ -71,7 +66,7 @@ CREATE TABLE accounts
 CREATE TABLE sessions
 (
   id SERIAL,
-  "userId" INTEGER NOT NULL,
+  "userId" INTEGER NOT NULL REFERENCES users(id),
   expires TIMESTAMPTZ NOT NULL,
   "sessionToken" VARCHAR(255) NOT NULL,
 
@@ -83,6 +78,10 @@ CREATE INDEX idx_tests_user_id ON tests(user_id);
 CREATE INDEX idx_comments_test_id ON comments(test_id);
 CREATE INDEX idx_comments_user_id ON comments(user_id);
 
-
 -- +goose Down
-SELECT 'down SQL query';
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS tests;
+DROP TABLE IF EXISTS verification_token;
+DROP TABLE IF EXISTS accounts;
+DROP TABLE IF EXISTS sessions;
+DROP TABLE IF EXISTS users;
