@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"server/models"
+	"github.com/p-glynn/okeefe-ecg-v2-backend/models"
 )
 
 type TestRepository struct {

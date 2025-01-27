@@ -1,38 +1,37 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
-	"server/models"
-	"server/repository"
+	"github.com/gin-gonic/gin"
+	"github.com/p-glynn/okeefe-ecg-v2-backend/models"
+	"github.com/p-glynn/okeefe-ecg-v2-backend/repository"
 )
 
 type TestHandler struct {
 	repo *repository.TestRepository
 }
 
-func NewTestHandler(repo *repository.TestRepository) *TestHandler {
-	return &TestHandler{repo: repo}
+func NewTestHandler(db *sql.DB) *TestHandler {
+	return &TestHandler{
+		repo: repository.NewTestRepository(db),
+	}
 }
 
 type CreateTestRequest struct {
-	UserID      int64           `json:"user_id"`
-	Title       string          `json:"title"`
+	UserID      int64           `json:"user_id" binding:"required"`
+	Title       string          `json:"title" binding:"required"`
 	Description string          `json:"description"`
-	ECGData     json.RawMessage `json:"ecg_data"`
+	ECGData     json.RawMessage `json:"ecg_data" binding:"required"`
 }
 
-func (h *TestHandler) Create(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
+func (h *TestHandler) Create(c *gin.Context) {
 	var req CreateTestRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -45,83 +44,63 @@ func (h *TestHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.repo.Create(test); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error creating test")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating test"})
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, test)
+	c.JSON(http.StatusCreated, test)
 }
 
-func (h *TestHandler) Get(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
-	idStr := r.URL.Query().Get("id")
-	if idStr == "" {
-		respondWithError(w, http.StatusBadRequest, "Test ID is required")
-		return
-	}
-
-	id, err := strconv.ParseInt(idStr, 10, 64)
+func (h *TestHandler) Get(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid test ID")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid test ID"})
 		return
 	}
 
 	test, err := h.repo.GetByID(id)
 	if err != nil {
-		respondWithError(w, http.StatusNotFound, "Test not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "Test not found"})
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, test)
+	c.JSON(http.StatusOK, test)
 }
 
-func (h *TestHandler) GetByUser(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
-	userIDStr := r.URL.Query().Get("user_id")
-	if userIDStr == "" {
-		respondWithError(w, http.StatusBadRequest, "User ID is required")
-		return
-	}
-
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+func (h *TestHandler) GetByUser(c *gin.Context) {
+	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid user ID")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
 	tests, err := h.repo.GetByUserID(userID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error retrieving tests")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error retrieving tests"})
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, tests)
+	c.JSON(http.StatusOK, tests)
 }
 
-func (h *TestHandler) Update(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPut {
-		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
+func (h *TestHandler) Update(c *gin.Context) {
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid test ID"})
 		return
 	}
 
 	var test models.Test
-	if err := json.NewDecoder(r.Body).Decode(&test); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+	if err := c.ShouldBindJSON(&test); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	test.ID = id
 	if err := h.repo.Update(&test); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Error updating test")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating test"})
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, test)
+	c.JSON(http.StatusOK, test)
 }

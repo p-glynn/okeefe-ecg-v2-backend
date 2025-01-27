@@ -7,13 +7,13 @@ import (
 )
 
 type User struct {
-	ID           int64     `json:"id"`
-	Email        string    `json:"email"`
-	PasswordHash string    `json:"-"` // "-" ensures this field is never serialized to JSON
-	FirstName    string    `json:"first_name"`
-	LastName     string    `json:"last_name"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID        int64     `json:"id"`
+	Email     string    `json:"email"`
+	PasswordHash  string    `json:"password"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Test struct {

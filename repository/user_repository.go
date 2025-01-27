@@ -6,7 +6,7 @@ import (
 	"time"
 
 	// "github.com/lib/pq"
-	"server/models"
+	"github.com/p-glynn/okeefe-ecg-v2-backend/models"
 )
 
 type UserRepository struct {
