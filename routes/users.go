@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/p-glynn/okeefe-ecg-v2-backend/repository"
+	"okeefe-ecg-v2-backend/repository"
 )
 
 type UserRoutes struct {
