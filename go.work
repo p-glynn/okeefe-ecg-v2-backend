@@ -1,0 +1,10 @@
+go 1.23.4
+
+use (
+	.
+	./db
+	./handlers
+	./models
+	./repository
+	./routes
+)
