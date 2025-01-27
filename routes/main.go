@@ -1,15 +1,32 @@
 package routes
 
 import (
+	"database/sql"
+	"log"
+	"os"
+
 	"github.com/gin-gonic/gin"
-	"github.com/p-glynn/okeefe-ecg-v2-backend/repository"
+	"okeefe-ecg-v2-backend/repository"
 )
 
 var router = gin.Default()
 var userRoutes *UserRoutes
 
 func Run() {
-	userRepo := repository.NewUserRepository()
+	// Initialize database connection
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatalf("Error connecting to the database: %v", err)
+	}
+	defer db.Close()
+
+	// Test the connection
+	err = db.Ping()
+	if err != nil {
+		log.Fatalf("Error pinging the database: %v", err)
+	}
+
+	userRepo := repository.NewUserRepository(db)
 	userRoutes = NewUserRoutes(userRepo)
 	getRoutes()
 	router.Run()
