@@ -6,7 +6,13 @@ require (
 	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/joho/godotenv v1.5.1
-	github.com/lib/pq v1.10.9
+	github.com/p-glynn/okeefe-ecg-v2-backend/db v0.0.0-00010101000000-000000000000
+	github.com/p-glynn/okeefe-ecg-v2-backend/handlers v0.0.0-00010101000000-000000000000
+)
+
+replace (
+	github.com/p-glynn/okeefe-ecg-v2-backend/db => ./db
+	github.com/p-glynn/okeefe-ecg-v2-backend/handlers => ./handlers
 )
 
 require (
@@ -38,11 +44,3 @@ require (
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace routes => ./routes
-
-replace repository => ./repository
-
-replace models => ./models
-
-replace handlers => ./handlers
