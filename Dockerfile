@@ -8,7 +8,7 @@ RUN apk add --no-cache git
 
 # Pre-copy/cache go.mod for better layer caching
 COPY go.mod go.sum ./
-RUN go mod download && go mod verify
+RUN go mod download -x && go mod verify
 
 # Copy the source code
 COPY . .
